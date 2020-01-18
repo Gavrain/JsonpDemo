@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Document</title>
+	</head>
+	<body>
+		<button id="btn">click</button>
+		<script>
+			function jsonp(arg) {
+				let script = document.createElement('script'),
+					uniq = `uniqFn${Math.random()
+						.toString()
+						.replace('.', '')}`,
+					params = arg.params ? arg.params : ''
+
+				if (params) {
+					let temp = []
+					for (k in params) {
+						temp.push(`&${k}=${params[k]}`)
+					}
+					params = temp.join("")
+				}
+				console.log(params);
+
+
+				script.src = `${arg.url}?callback=${uniq}${params}`
+				document.body.appendChild(script)
+				window[uniq] = arg.success
+
+				script.onload = function() {
+					this.remove()
+					delete window[uniq]
+				}
+			}
+
+			let btn = document.getElementById('btn')
+
+			btn.onclick = function() {
+				jsonp({
+					url: 'http://localhost:3001/test',
+					success: function(arg) {
+						console.log(arg)
+					},
+					params: {
+						name: 'zs',
+						age: 100,
+					},
+				})
+			}
+		</script>
+	</body>
+</html>
